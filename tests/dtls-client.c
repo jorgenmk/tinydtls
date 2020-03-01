@@ -20,10 +20,10 @@
 #include "dtls_debug.h"
 #include "dtls.h" 
 
-#define DEFAULT_PORT 20220
+#define DEFAULT_PORT 2444
 
-#define PSK_DEFAULT_IDENTITY "Client_identity"
-#define PSK_DEFAULT_KEY      "secretPSK"
+#define PSK_DEFAULT_IDENTITY "nrf91test"
+#define PSK_DEFAULT_KEY      "nrf91test"
 #define PSK_OPTIONS          "i:k:"
 
 #ifdef __GNUC__
@@ -45,7 +45,7 @@ static dtls_str output_file = { 0, NULL }; /* output file name */
 static dtls_context_t *dtls_context = NULL;
 static dtls_context_t *orig_dtls_context = NULL;
 
-
+#undef DTLS_ECC
 #ifdef DTLS_ECC
 static const unsigned char ecdsa_priv_key[] = {
 			0x41, 0xC1, 0xCB, 0x6B, 0x51, 0x24, 0x7A, 0x14,

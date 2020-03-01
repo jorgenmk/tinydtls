@@ -18,7 +18,7 @@
 #include "dtls.h" 
 #include "dtls_debug.h"
 
-#define DEFAULT_PORT 20220
+#define DEFAULT_PORT 2444
 
 #ifdef DTLS_ECC
 static const unsigned char ecdsa_priv_key[] = {
@@ -55,9 +55,11 @@ get_psk_info(struct dtls_context_t *ctx, const session_t *session,
     size_t id_length;
     unsigned char *key;
     size_t key_length;
-  } psk[3] = {
+  } psk[4] = {
     { (unsigned char *)"Client_identity", 15,
       (unsigned char *)"secretPSK", 9 },
+    { (unsigned char *)"nrf91test", 9,
+      (unsigned char *)"nrf91test", 9 },
     { (unsigned char *)"default identity", 16,
       (unsigned char *)"\x11\x22\x33", 3 },
     { (unsigned char *)"\0", 2,
@@ -76,7 +78,8 @@ get_psk_info(struct dtls_context_t *ctx, const session_t *session,
 	  dtls_warn("buffer too small for PSK");
 	  return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
 	}
-
+  printf("using key ID %d ", i);
+  printf("%s\n", psk[i].key);
 	memcpy(result, psk[i].key, psk[i].key_length);
 	return psk[i].key_length;
       }
@@ -133,8 +136,10 @@ read_from_peer(struct dtls_context_t *ctx,
     dtls_renegotiate(ctx, session);
     return len;
   }
-
-  return dtls_write(ctx, session, data, len);
+  char buf[1024] = "PONG: ";
+  memcpy(&buf[6], data, len);
+  buf[6+len] = 0;
+  return dtls_write(ctx, session, (uint8_t*)buf, strlen(buf));
 }
 
 static int
